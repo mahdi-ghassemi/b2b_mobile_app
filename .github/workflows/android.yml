@@ -1,0 +1,44 @@
+  name: Flutter Android CI
+
+  on:
+    push:
+      branches: [ main ]
+    workflow_dispatch:
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+        # گرفتن کد پروژه
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        # نصب Java (خیلی مهم برای Android)
+        - name: Setup Java
+          uses: actions/setup-java@v4
+          with:
+            distribution: 'temurin'
+            java-version: '17'
+
+        # نصب Flutter روی سرور GitHub
+        - name: Setup Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: '3.44.0'
+
+        # گرفتن dependencies
+        - name: Get dependencies
+          run: flutter pub get
+
+        # build APK
+        - name: Build APK
+          run: flutter build apk --release
+
+        # ذخیره خروجی
+        - name: Upload APK
+          uses: actions/upload-artifact@v4
+          with:
+            name: release-apk
+            path: build/app/outputs/flutter-apk/app-release.apk
+
