@@ -1,10 +1,10 @@
-//import 'package:b2b_mobile_app/screens/splash/splash.dart';
-import 'package:b2b_mobile_app/app/theme_controller.dart';
-import 'package:b2b_mobile_app/screens/home/main_home.dart';
-import 'package:b2b_mobile_app/screens/welcome/welcome.dart';
+import 'package:b2b_mobile_app/core/l10n/arb/app_localizations.dart';
+import 'package:b2b_mobile_app/core/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import '../l10n/app_localizations.dart';
-import 'language_controller.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import '../features/startup/presentation/providers/app_theme_provider.dart';
+import '../features/startup/presentation/screens/splash_screen.dart';
 
 
 class B2BApp extends StatelessWidget {
@@ -12,29 +12,33 @@ class B2BApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([languageController, themeController]),
-      builder: (_, __) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
+    //final locale = context.watch<AppLocaleProvider>().locale;
+    final themeMode = context.watch<AppThemeProvider>().mode;
 
-          locale: languageController.locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      supportedLocales: L10n.supportedLocales,
+      locale: null,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
 
-          theme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.light,
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.dark,
-          ),
-          themeMode: themeController.mode,
-
-          home: const HomeScreen(),
-        );
-      },
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorSchemeSeed: const Color(0xFFFFC93C),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorSchemeSeed: const Color(0xFFFFC93C),
+      ),
+      themeMode: themeMode,
+      home: const SplashScreen(),
     );
   }
 }
